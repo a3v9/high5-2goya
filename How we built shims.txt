@@ -1,0 +1,14 @@
+How to build the shims
+
+For source we didn't use .c files, we instead just used code.
+cat > shim.c <<'EOF'
+#include <sys/types.h>
+extern pid_t _ZNK7android14IPCThreadState13getCallingPidEv(const void *self);
+pid_t _ZN7android14IPCThreadState13getCallingPidEv(void *self) {
+return _ZNK7android14IPCThreadState13getCallingPidEv(self);
+}
+EOF
+
+$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi21-clang \
+-shared -fPIC -Wl,--hash-style=both -o libshim_gralloc.so shim.c \
+-Lsystem/lib -lbinder.
